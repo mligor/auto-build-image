@@ -1,0 +1,16 @@
+variables:
+  KANIKO_VERSION: 0.7.0
+
+build-and-push:
+  image:
+    name: "gcr.io/kaniko-project/executor:debug-v$KANIKO_VERSION"
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - >
+      /kaniko/executor
+      --build-arg "KANIKO_TAG=debug-v$KANIKO_VERSION"
+      --context "$CI_PROJECT_DIR"
+      --destination "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA"
+  only:
+    - master
