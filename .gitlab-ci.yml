@@ -1,7 +1,14 @@
 variables:
   KANIKO_VERSION: 0.7.0
 
-build-and-push:
+  BUILD_IMAGE_NAME: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA"
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
   image:
     name: "gcr.io/kaniko-project/executor:debug-v$KANIKO_VERSION"
     entrypoint: [""]
@@ -11,6 +18,10 @@ build-and-push:
       /kaniko/executor
       --build-arg "KANIKO_TAG=debug-v$KANIKO_VERSION"
       --context "$CI_PROJECT_DIR"
-      --destination "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA"
-  only:
-    - master
+      --destination "$BUILD_IMAGE_NAME"
+
+test:
+  stage: test
+  image: "$BUILD_IMAGE_NAME"
+  script:
+    - /build/build.sh --no-push --cache=false

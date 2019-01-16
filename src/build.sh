@@ -22,4 +22,5 @@ fi
   --cache true \
   --context "$CI_PROJECT_DIR" \
   --dockerfile "$CI_PROJECT_DIR/Dockerfile" \
-  --destination "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
+  --destination "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" \
+  "$@"
