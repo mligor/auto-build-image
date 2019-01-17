@@ -2,7 +2,7 @@ variables:
   KANIKO_VERSION: 0.7.0
 
   BUILD_IMAGE_NAME: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA"
-  RELEASE_IMAGE_NAME: "$CI_REGISTRY_IMAGE/releases/kaniko-$KANIKO_VERSION"
+  RELEASE_IMAGE_NAME: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:stable"
 
 stages:
   - build
@@ -39,5 +39,3 @@ release:
     - docker pull "$BUILD_IMAGE_NAME"
     - docker tag "$BUILD_IMAGE_NAME" "$RELEASE_IMAGE_NAME"
     - docker push "$RELEASE_IMAGE_NAME"
-  only:
-    - master
