@@ -22,11 +22,20 @@ build:
       --context "$CI_PROJECT_DIR"
       --destination "$BUILD_IMAGE_NAME"
 
-test:
+test-dockerfile:
   stage: test
   image: "$BUILD_IMAGE_NAME"
   script:
+    # build our own image dockerfile
     - /build/build.sh --no-push --cache=false
+
+test-herokuish:
+  stage: test
+  image: "$BUILD_IMAGE_NAME"
+  script:
+    # build a herokuish ruby project
+    - cd "$CI_PROJECT_DIR/test/ruby"
+    - /build/build.sh --no-push --cache=false --context="$CI_PROJECT_DIR/test/ruby"
 
 release:
   stage: release

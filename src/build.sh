@@ -21,6 +21,5 @@ fi
   --build-arg no_proxy="$no_proxy" \
   --cache true \
   --context "$CI_PROJECT_DIR" \
-  --dockerfile "$CI_PROJECT_DIR/Dockerfile" \
   --destination "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" \
   "$@"
