@@ -26,8 +26,9 @@ test-dockerfile:
   stage: test
   image: "$BUILD_IMAGE_NAME"
   script:
-    # build our own image dockerfile
-    - /build/build.sh --no-push --cache=false
+    # build a Dockerfile ruby project
+    - cd "$CI_PROJECT_DIR/test/ruby_with_dockerfile"
+    - /build/build.sh --no-push --cache=false --context="$CI_PROJECT_DIR/test/ruby_with_dockerfile"
 
 test-herokuish:
   stage: test
