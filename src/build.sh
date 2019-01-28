@@ -19,7 +19,6 @@ fi
   --build-arg ftp_proxy="$ftp_proxy" \
   --build-arg NO_PROXY="$NO_PROXY" \
   --build-arg no_proxy="$no_proxy" \
-  --cache true \
   --context "$CI_PROJECT_DIR" \
   --destination "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" \
   "$@"
