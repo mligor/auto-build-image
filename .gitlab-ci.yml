@@ -1,8 +1,14 @@
 variables:
-  KANIKO_VERSION: 0.7.0
+  DOCKER_DRIVER: overlay2
 
   BUILD_IMAGE_NAME: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA"
   RELEASE_IMAGE_NAME: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:stable"
+
+  CI_APPLICATION_TAG: "$CI_COMMIT_SHA"
+  CI_APPLICATION_REPOSITORY: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG/$CI_JOB_NAME"
+
+services:
+  - docker:stable-dind
 
 stages:
   - build
@@ -11,38 +17,30 @@ stages:
 
 build:
   stage: build
-  image:
-    name: "gcr.io/kaniko-project/executor:debug-v$KANIKO_VERSION"
-    entrypoint: [""]
+  image: docker:stable
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - >
-      /kaniko/executor
-      --build-arg "KANIKO_TAG=debug-v$KANIKO_VERSION"
-      --context "$CI_PROJECT_DIR"
-      --destination "$BUILD_IMAGE_NAME"
+    - docker build --tag "$BUILD_IMAGE_NAME" .
+    - docker push "$BUILD_IMAGE_NAME"
 
 test-dockerfile:
   stage: test
   image: "$BUILD_IMAGE_NAME"
   script:
-    # build a Dockerfile ruby project
     - cd "$CI_PROJECT_DIR/test/ruby_with_dockerfile"
-    - /build/build.sh --no-push --cache=false --context="$CI_PROJECT_DIR/test/ruby_with_dockerfile"
+    - /build/build.sh
 
 test-herokuish:
   stage: test
   image: "$BUILD_IMAGE_NAME"
   script:
-    # build a herokuish ruby project
     - cd "$CI_PROJECT_DIR/test/ruby"
-    - /build/build.sh --no-push --cache=false --context="$CI_PROJECT_DIR/test/ruby"
+    - /build/build.sh
 
 release:
   stage: release
-  image: docker
-  services:
-    - docker:dind
+  image: docker:stable
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
