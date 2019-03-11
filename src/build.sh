@@ -19,15 +19,11 @@ else
 fi
 
 docker build \
-  --build-arg BUILDPACK_URL="$BUILDPACK_URL" \
-  --build-arg HTTP_PROXY="$HTTP_PROXY" \
-  --build-arg http_proxy="$http_proxy" \
-  --build-arg HTTPS_PROXY="$HTTPS_PROXY" \
-  --build-arg https_proxy="$https_proxy" \
-  --build-arg FTP_PROXY="$FTP_PROXY" \
-  --build-arg ftp_proxy="$ftp_proxy" \
-  --build-arg NO_PROXY="$NO_PROXY" \
-  --build-arg no_proxy="$no_proxy" \
+  --build-arg BUILDPACK_URL="${BUILDPACK_URL:-$buildpack_url}" \
+  --build-arg HTTP_PROXY="${HTTP_PROXY:-$http_proxy}" \
+  --build-arg HTTPS_PROXY="${HTTPS_PROXY:-$https_proxy}" \
+  --build-arg FTP_PROXY="${FTP_PROXY:-$ftp_proxy}" \
+  --build-arg NO_PROXY="${NO_PROXY:-$no_proxy}" \
   --tag "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" .
 
 docker push "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
