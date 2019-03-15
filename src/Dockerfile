@@ -1,5 +1,6 @@
 FROM gliderlabs/herokuish as builder
 COPY . /tmp/app
+ARG BUILDPACK_URL
 RUN /bin/herokuish buildpack build
 
 FROM gliderlabs/herokuish

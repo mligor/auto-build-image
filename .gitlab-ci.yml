@@ -38,6 +38,15 @@ test-herokuish:
     - cd "$CI_PROJECT_DIR/test/ruby"
     - /build/build.sh
 
+test-herokuish-with-buildpack-url:
+  stage: test
+  image: "$BUILD_IMAGE_NAME"
+  variables:
+    BUILDPACK_URL: https://github.com/HashNuke/heroku-buildpack-elixir.git
+  script:
+    - cd "$CI_PROJECT_DIR/test/elixir"
+    - /build/build.sh
+
 release:
   stage: release
   image: docker:stable
