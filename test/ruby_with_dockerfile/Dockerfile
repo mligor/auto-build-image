@@ -6,5 +6,6 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install
 COPY . ./
 
-EXPOSE 5000
+ENV PORT 5000
+EXPOSE $PORT
 CMD ["bundle", "exec", "rackup", "--host=0.0.0.0", "--port=5000"]
