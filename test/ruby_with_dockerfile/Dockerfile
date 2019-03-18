@@ -8,4 +8,4 @@ COPY . ./
 
 ENV PORT 5000
 EXPOSE $PORT
-CMD ["bundle", "exec", "rackup", "--host=0.0.0.0", "--port=5000"]
+CMD ["sh", "-c", "bundle exec rackup --host=0.0.0.0 --port=$PORT"]
