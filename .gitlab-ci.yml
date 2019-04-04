@@ -24,27 +24,34 @@ build:
     - docker build --tag "$BUILD_IMAGE_NAME" .
     - docker push "$BUILD_IMAGE_NAME"
 
-test-dockerfile:
+test-ruby:
   stage: test
   image: "$BUILD_IMAGE_NAME"
   script:
     - cd "$CI_PROJECT_DIR/test/ruby_with_dockerfile"
     - /build/build.sh
 
-test-herokuish:
+test-ruby-with-dockerfile:
   stage: test
   image: "$BUILD_IMAGE_NAME"
   script:
     - cd "$CI_PROJECT_DIR/test/ruby"
     - /build/build.sh
 
-test-herokuish-with-buildpack-url:
+test-elixir-with-buildpack-url:
   stage: test
   image: "$BUILD_IMAGE_NAME"
   variables:
     BUILDPACK_URL: https://github.com/HashNuke/heroku-buildpack-elixir.git
   script:
     - cd "$CI_PROJECT_DIR/test/elixir"
+    - /build/build.sh
+
+test-javascript-react:
+  stage: test
+  image: "$BUILD_IMAGE_NAME"
+  script:
+    - cd "$CI_PROJECT_DIR/test/javascript_react"
     - /build/build.sh
 
 release:
