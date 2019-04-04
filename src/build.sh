@@ -1,8 +1,14 @@
 # build stage script for Auto-DevOps
 
+if ! docker info &>/dev/null; then
+  if [ -z "$DOCKER_HOST" -a "$KUBERNETES_PORT" ]; then
+    export DOCKER_HOST='tcp://localhost:2375'
+  fi
+fi
+
 if [[ -n "$CI_REGISTRY_USER" ]]; then
   echo "Logging to GitLab Container Registry with CI credentials..."
-  echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
 fi
 
 if [[ -f Dockerfile ]]; then
@@ -12,7 +18,7 @@ else
   cp /build/Dockerfile Dockerfile
 fi
 
-/kaniko/executor \
+docker build \
   --build-arg BUILDPACK_URL="$BUILDPACK_URL" \
   --build-arg HTTP_PROXY="$HTTP_PROXY" \
   --build-arg http_proxy="$http_proxy" \
@@ -22,5 +28,6 @@ fi
   --build-arg ftp_proxy="$ftp_proxy" \
   --build-arg NO_PROXY="$NO_PROXY" \
   --build-arg no_proxy="$no_proxy" \
-  --context "`pwd`" \
-  --destination "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" .
+  --tag "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" .
+
+docker push "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
