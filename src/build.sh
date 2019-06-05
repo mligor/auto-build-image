@@ -1,3 +1,5 @@
+#!/bin/sh -e
+
 # build stage script for Auto-DevOps
 
 if ! docker info &>/dev/null; then
