@@ -30,6 +30,7 @@ docker build \
   --build-arg ftp_proxy="$ftp_proxy" \
   --build-arg NO_PROXY="$NO_PROXY" \
   --build-arg no_proxy="$no_proxy" \
+  $AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS \
   --tag "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" .
 
 docker push "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
