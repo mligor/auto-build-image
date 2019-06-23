@@ -1,9 +1,9 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 # build stage script for Auto-DevOps
 
 if ! docker info &>/dev/null; then
-  if [ -z "$DOCKER_HOST" -a "$KUBERNETES_PORT" ]; then
+  if [ -z "$DOCKER_HOST" ] && [ "$KUBERNETES_PORT" ]; then
     export DOCKER_HOST='tcp://localhost:2375'
   fi
 fi
@@ -20,6 +20,8 @@ else
   cp /build/Dockerfile Dockerfile
 fi
 
+# shellcheck disable=SC2154 # missing variable warning for the lowercase variables
+# shellcheck disable=SC2086 # double quoting for globbing warning for $AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS
 docker build \
   --build-arg BUILDPACK_URL="$BUILDPACK_URL" \
   --build-arg HTTP_PROXY="$HTTP_PROXY" \
