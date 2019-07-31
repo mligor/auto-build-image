@@ -44,6 +44,13 @@ test-herokuish:
     - cd "$CI_PROJECT_DIR/test/ruby"
     - /build/build.sh
 
+test-herokuish-with-procfile:
+  stage: test
+  image: "$BUILD_IMAGE_NAME"
+  script:
+    - cd "$CI_PROJECT_DIR/test/ruby_with_procfile"
+    - /build/build.sh
+
 test-herokuish-with-buildpack-url:
   stage: test
   image: "$BUILD_IMAGE_NAME"
