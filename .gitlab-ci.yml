@@ -53,6 +53,24 @@ test-herokuish-with-buildpack-url:
     - cd "$CI_PROJECT_DIR/test/elixir"
     - /build/build.sh
 
+test-rspec:
+  stage: test
+  image: "$BUILD_IMAGE_NAME"
+  before_script:
+    - gem install --no-rdoc --no-ri bundler
+    - bundle install --without rubocop
+  script:
+    - bundle exec rspec
+
+test-rubocop:
+  stage: test
+  image: ruby
+  before_script:
+    - gem install bundler
+    - bundle install --without test
+  script:
+    - bundle exec rubocop Gemfile src spec
+
 release:
   stage: release
   image: docker:stable

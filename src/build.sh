@@ -20,9 +20,14 @@ else
   cp /build/Dockerfile Dockerfile
 fi
 
+build_secret_path=/tmp/auto-devops-build-secrets
+"$(dirname "$0")"/export-build-secrets > "$build_secret_path"
+
 # shellcheck disable=SC2154 # missing variable warning for the lowercase variables
 # shellcheck disable=SC2086 # double quoting for globbing warning for $AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS
-docker build \
+
+DOCKER_BUILDKIT=1 docker build \
+  --secret id=auto-devops-build-secrets,src="$build_secret_path" \
   --build-arg BUILDPACK_URL="$BUILDPACK_URL" \
   --build-arg HTTP_PROXY="$HTTP_PROXY" \
   --build-arg http_proxy="$http_proxy" \
