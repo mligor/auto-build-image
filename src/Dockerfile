@@ -1,10 +1,8 @@
-# syntax = docker/dockerfile:experimental
-
 FROM gliderlabs/herokuish as builder
 COPY . /tmp/app
 ARG BUILDPACK_URL
 ENV USER=herokuishuser
-RUN --mount=type=secret,id=auto-devops-build-secrets . /run/secrets/auto-devops-build-secrets && /bin/herokuish buildpack build
+RUN /bin/herokuish buildpack build
 
 FROM gliderlabs/herokuish
 COPY --chown=herokuishuser:herokuishuser --from=builder /app /app
