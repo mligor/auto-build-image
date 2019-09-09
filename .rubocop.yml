@@ -1,8 +1,0 @@
-require: rubocop-rspec
-
-Metrics/BlockLength:
-  Exclude:
-    - 'spec/**_spec.rb'
-
-RSpec/ExampleLength:
-  Max: 100
