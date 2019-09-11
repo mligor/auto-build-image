@@ -17,12 +17,23 @@ if [[ -f Dockerfile ]]; then
   echo "Building Dockerfile-based application..."
 else
   echo "Building Heroku-based application using gliderlabs/herokuish docker image..."
-  cp /build/Dockerfile Dockerfile
+  erb -T - /build/Dockerfile.erb > Dockerfile
+fi
+
+build_secret_args=''
+if [[ -n "$AUTO_DEVOPS_BUILD_IMAGE_FORWARDED_CI_VARIABLES" ]]; then
+  build_secret_file_path=/tmp/auto-devops-build-secrets
+  "$(dirname "$0")"/export-build-secrets > "$build_secret_file_path"
+  build_secret_args="--secret id=auto-devops-build-secrets,src=$build_secret_file_path"
+
+  echo 'Activating Docker BuildKit to forward CI variables with --secret'
+  export DOCKER_BUILDKIT=1
 fi
 
 # shellcheck disable=SC2154 # missing variable warning for the lowercase variables
-# shellcheck disable=SC2086 # double quoting for globbing warning for $AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS
+# shellcheck disable=SC2086 # double quoting for globbing warning for $build_secret_args and $AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS
 docker build \
+  $build_secret_args \
   --build-arg BUILDPACK_URL="$BUILDPACK_URL" \
   --build-arg HTTP_PROXY="$HTTP_PROXY" \
   --build-arg http_proxy="$http_proxy" \

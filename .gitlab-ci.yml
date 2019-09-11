@@ -37,9 +37,29 @@ test-dockerfile:
     - cd "$CI_PROJECT_DIR/test/ruby_with_dockerfile"
     - /build/build.sh
 
+# This test is to prevent a regression until https://github.com/docker/engine/pull/339 is out
+# See https://gitlab.com/gitlab-org/cluster-integration/auto-build-image/issues/13 for context
+test-redhat-registry:
+  stage: test
+  image: "$BUILD_IMAGE_NAME"
+  script:
+    - cd "$CI_PROJECT_DIR/test/redhat_registry"
+    - /build/build.sh
+
 test-herokuish:
   stage: test
   image: "$BUILD_IMAGE_NAME"
+  script:
+    - cd "$CI_PROJECT_DIR/test/ruby"
+    - /build/build.sh
+
+test-herokuish-with-build-secrets:
+  stage: test
+  image: "$BUILD_IMAGE_NAME"
+  variables:
+    FORWARDED_VARIABLE_0: 'my forwarded variable 0'
+    FORWARDED_VARIABLE_1: 'my forwarded variable 1'
+    AUTO_DEVOPS_BUILD_IMAGE_FORWARDED_CI_VARIABLES: FORWARDED_VARIABLE_0,FORWARDED_VARIABLE_1
   script:
     - cd "$CI_PROJECT_DIR/test/ruby"
     - /build/build.sh
@@ -52,6 +72,24 @@ test-herokuish-with-buildpack-url:
   script:
     - cd "$CI_PROJECT_DIR/test/elixir"
     - /build/build.sh
+
+test-rspec:
+  stage: test
+  image: "$BUILD_IMAGE_NAME"
+  before_script:
+    - gem install --no-rdoc --no-ri bundler
+    - bundle install --without rubocop
+  script:
+    - bundle exec rspec
+
+test-rubocop:
+  stage: test
+  image: ruby:2.5
+  before_script:
+    - gem install bundler
+    - bundle install --without test
+  script:
+    - bundle exec rubocop Gemfile src spec
 
 release:
   stage: release
