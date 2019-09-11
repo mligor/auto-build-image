@@ -13,6 +13,7 @@ services:
 stages:
   - build
   - test
+  - test-run
   - release
 
 build:
@@ -52,6 +53,17 @@ test-herokuish:
   script:
     - cd "$CI_PROJECT_DIR/test/ruby"
     - /build/build.sh
+
+test-run-herokuish:
+  stage: test-run
+  image: docker:stable
+  needs: ["test-herokuish"]
+  services:
+    - name: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG/test-herokuish:$CI_APPLICATION_TAG"
+      alias: app
+  script:
+    - wget app:5000
+    - grep 'Hello World!' index.html
 
 test-herokuish-with-build-secrets:
   stage: test
