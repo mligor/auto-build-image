@@ -30,9 +30,16 @@ if [[ -n "$AUTO_DEVOPS_BUILD_IMAGE_FORWARDED_CI_VARIABLES" ]]; then
   export DOCKER_BUILDKIT=1
 fi
 
+# pull images for cache - this is required, otherwise --cache-from will not work
+docker image pull "$CI_APPLICATION_REPOSITORY:$CI_COMMIT_BEFORE_SHA" || \
+docker image pull "$CI_APPLICATION_REPOSITORY:latest" || \
+true
+
 # shellcheck disable=SC2154 # missing variable warning for the lowercase variables
 # shellcheck disable=SC2086 # double quoting for globbing warning for $build_secret_args and $AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS
 docker build \
+  --cache-from "$CI_APPLICATION_REPOSITORY:$CI_COMMIT_BEFORE_SHA" \
+  --cache-from "$CI_APPLICATION_REPOSITORY:latest" \
   $build_secret_args \
   --build-arg BUILDPACK_URL="$BUILDPACK_URL" \
   --build-arg HTTP_PROXY="$HTTP_PROXY" \
@@ -44,6 +51,8 @@ docker build \
   --build-arg NO_PROXY="$NO_PROXY" \
   --build-arg no_proxy="$no_proxy" \
   $AUTO_DEVOPS_BUILD_IMAGE_EXTRA_ARGS \
-  --tag "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" .
+  --tag "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" \
+  --tag "$CI_APPLICATION_REPOSITORY:latest" .
 
 docker push "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
+docker push "$CI_APPLICATION_REPOSITORY:latest"
